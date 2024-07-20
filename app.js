@@ -47,7 +47,7 @@ app.post("/run-code", (req, res) => {
     if (error) {
       return res.status(400).json({
         success: false,
-        error: stderr || error.message,
+        output: stderr || error.message,
       });
     }
     res.status(200).json({
