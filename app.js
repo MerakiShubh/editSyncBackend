@@ -6,6 +6,7 @@ import { createServer } from "http";
 import { Server } from "socket.io";
 import { ACTIONS } from "./src/utils/Actions.js";
 import { exec } from "child_process";
+import twilio from "twilio";
 
 dotenv.config();
 
@@ -21,6 +22,24 @@ app.use(
 );
 
 app.use(express.json());
+
+const twilioClient = twilio(config.get("sms_sid"), config.get("sms_authtoken"));
+
+app.post("/send-sms", (req, res) => {
+  const { phoneNo, message } = req.body;
+  twilioClient.messages
+    .create({
+      body: message,
+      from: config.get("smsfromnumber"),
+      to: phoneNo,
+    })
+    .then((message) => {
+      res.status(200).json({ success: true, message: message.sid });
+    })
+    .catch((error) => {
+      res.status(500).json({ success: false, error: error.message });
+    });
+});
 
 app.post("/run-code", (req, res) => {
   const { code } = req.body;
