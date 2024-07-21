@@ -1,0 +1,27 @@
+version: "3.8"
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - CORS_ORIGIN=*
+      - SMS_SID=${SMS_SID}
+      - SMS_AUTHTOKEN=${SMS_AUTHTOKEN}
+      - SMS_FROM_NUMBER=${SMS_FROM_NUMBER}
+      - FRONTEND_DOMAIN=${FRONTEND_DOMAIN}
+    ports:
+      - "3000:3000"
+    command: ["npm", "run", "dev"]
+
+  nginx:
+    build:
+      context: .
+      dockerfile: Dockerfile.nginx
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
