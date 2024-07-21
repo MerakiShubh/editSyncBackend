@@ -1,0 +1,23 @@
+# Stage 2: Setup NGINX
+FROM nginx:latest
+
+# Install netcat
+RUN apt-get update && apt-get install -y netcat-openbsd && apt-get clean
+
+# Copy the build files from the previous stage
+COPY build /usr/src/app
+
+# Copy your custom NGINX configuration file
+COPY nginx.conf /etc/nginx/nginx.conf
+
+# Copy the entrypoint script
+COPY entrypoint.sh /entrypoint.sh
+
+# Make the entrypoint script executable
+RUN chmod +x /entrypoint.sh
+
+# Expose the port that NGINX will run on
+EXPOSE 80
+
+# Use the entrypoint script to start NGINX
+ENTRYPOINT ["/entrypoint.sh"]
